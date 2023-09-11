@@ -45,17 +45,39 @@ except URLError as e:
 
 streamlit.stop()
 
-streamlit.header("The fruit load list contains:")
-def get_fruit_load_list():
-  with my_cnx.cursor() as my_cur:
-    my_cur.execute("SELECT * from fruit_load_list")
-    return my_cur.fetchall()
 
-if streamlit.button('Get fruit load list'):
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_data_rows = get_fruit_load_list()
-streamlit.header("The List contains:")
-streamlit.dataframe(my_data_rows)
+# Streamlit-Überschrift
+streamlit.header("The fruit load list contains:")
+
+# Funktion zur Abfrage der Datenbank
+def get_fruit_load_list(connection):
+    with connection.cursor() as my_cur:
+        my_cur.execute("SELECT * FROM fruit_load_list")
+        return my_cur.fetchall()
+
+# Verbindung zur Snowflake-Datenbank herstellen
+try:
+    my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+except Exception as e:
+    streamlit.error("Error connecting to Snowflake: " + str(e))
+else:
+    # Button, um die Daten aus der Datenbank abzurufen
+    if streamlit.button('Get fruit load list'):
+        my_data_rows = get_fruit_load_list(my_cnx)
+
+        # Streamlit-Überschrift für die angezeigten Daten
+        streamlit.header("The List contains:")
+
+        # Daten in einem DataFrame anzeigen
+        if my_data_rows:
+            streamlit.dataframe(my_data_rows)
+        else:
+            streamlit.warning("No data found in the fruit load list.")
+
+# Verbindung zur Datenbank schließen
+if 'my_cnx' in locals():
+    my_cnx.close()
+
 
 
 # Let's put a pick list here so they can pick the fruit they want to include 
