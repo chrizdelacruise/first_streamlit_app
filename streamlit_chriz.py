@@ -1,4 +1,6 @@
 import streamlit as st
+import pandas
+import requests
 
 # Funktion zur Anmeldung für ein Event
 def submit_event(event, username, password):
@@ -23,8 +25,6 @@ def main():
         else:
             st.warning("Bitte gib Benutzername und Passwort ein")
 
-    # Schöne Grafik hinzufügen
-    st.image("beautiful_image.jpg", caption="Schöne Grafik")
 
 if __name__ == "__main__":
     main()
