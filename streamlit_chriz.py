@@ -1,65 +1,30 @@
 import streamlit as st
-import snowflake.connector
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
-# Snowflake Verbindungsinformationen
-snowflake_user = 'your_snowflake_user'
-snowflake_password = 'your_snowflake_password'
-snowflake_account = 'your_snowflake_account'
-snowflake_database = 'your_snowflake_database'
-snowflake_schema = 'your_snowflake_schema'
-snowflake_warehouse = 'your_snowflake_warehouse'
+# Funktion zur Anmeldung für ein Event
+def submit_event(event, username, password):
+    # Hier könntest du den Code für die Anmeldung zu einem bestimmten Event einfügen
+    st.success(f"Erfolgreich für {event} angemeldet mit Benutzername {username} und Passwort {password}")
 
-# SMTP Einstellungen für die E-Mail
-smtp_server = 'your_smtp_server'
-smtp_port = 587
-smtp_username = 'your_smtp_username'
-smtp_password = 'your_smtp_password'
-sender_email = 'your_sender_email'
-recipient_email = 'snowflake@in-factory.com'
+# Seite mit Streamlit erstellen
+def main():
+    st.title("Event Anmeldung")
 
-# Snowflake Verbindung herstellen
-conn = snowflake.connector.connect(
-    user=snowflake_user,
-    password=snowflake_password,
-    account=snowflake_account,
-    database=snowflake_database,
-    schema=snowflake_schema,
-    warehouse=snowflake_warehouse
-)
+    # Auswahlliste für Events
+    event = st.selectbox("Wähle ein Event aus:", ["Event 1", "Event 2"])
 
-def submit():
-    # Hier kannst du den Insert-Befehl für deine Snowflake-Tabelle definieren
-    # Zum Beispiel: cursor.execute("INSERT INTO events (name, email) VALUES (%s, %s)", (name, email))
+    # Felder für Benutzername und Passwort
+    username = st.text_input("Benutzername:")
+    password = st.text_input("Passwort:", type="password")
 
-    # E-Mail senden
-    subject = "Anmeldung für Event"
-    body = f"Name: {name}\nEmail: {email}"
-    send_email(subject, body)
-    
-    st.success("Anmeldung erfolgreich!")
+    # Button zur Anmeldung
+    if st.button("Anmelden"):
+        if username and password:
+            submit_event(event, username, password)
+        else:
+            st.warning("Bitte gib Benutzername und Passwort ein")
 
-def send_email(subject, body):
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = recipient_email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
+    # Schöne Grafik hinzufügen
+    st.image("beautiful_image.jpg", caption="Schöne Grafik")
 
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_username, smtp_password)
-        text = msg.as_string()
-        server.sendmail(sender_email, recipient_email, text)
-
-# Streamlit App definieren
-st.title("Event Anmeldung")
-
-# Widgets erstellen
-name = st.text_input("Name:")
-email = st.text_input("Email:")
-
-if st.button("Anmelden"):
-    submit()
+if __name__ == "__main__":
+    main()
